@@ -1,11 +1,21 @@
 package kr.or.ddit.emp.vo;
 
-public class EmpVO {
+import java.io.Serializable;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+public class EmpVO implements Serializable {
+	@NotBlank
 	private String empNo;
+	@NotBlank
 	private String nm;
+	@NotBlank
 	private String addr;
+	@NotBlank
 	private String hp;
+	@NotBlank
 	private String postNo;
+
 	private String addr2;
 	private String password;
 	
