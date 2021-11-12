@@ -3,38 +3,47 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.or.ddit.emp.mapper.EmpMapper">
+	<!-- 직원조회 -->
 	<select id="list" resultType="empVO">
 		SELECT * FROM EMP
 		 ORDER BY EMP_NO ASC
 	</select>
 	
-	<select id="selectProduct" parameterType="string" resultType="hashMap">
-		SELECT * FROM PRODUCT WHERE PRODUCTID = #{productId}
+	<!-- 직원 정보 상세 -->
+	<select id="detail" parameterType="String" resultType="empVO">
+		SELECT EMP_NO, NM, ADDR, HP, POST_NO, ADDR2
+			  ,PKG_CRYPTO.DECRYPT(PASSWORD) AS PASSWORD
+		  FROM EMP
+		 WHERE EMP_NO = #{empNo}
 	</select>
 	
-	<insert id="insertProduct" parameterType="hashMap">
-		INSERT INTO PRODUCT
-		VALUES(#{productId},#{pname},#{unitPrice},#{description},#{category},#{manufacturer},
-		#{unitsInStock},#{condition},#{filename})
+	<!-- 직원등록 -->
+	<insert id="insert" parameterType="empVO">
+      MERGE INTO EMP A
+      USING DUAL
+      ON(A.EMP_NO = #{empNo})   
+      WHEN MATCHED THEN
+          UPDATE SET A.NM=#{nm}, A.ADDR=#{addr}, A.HP=#{hp}
+          , A.POST_NO=#{postNo}, A.ADDR2=#{addr2}
+          , A.PASSWORD=PKG_CRYPTO.ENCRYPT(#{password})
+      WHEN NOT MATCHED THEN 
+          INSERT(EMP_NO, NM, ADDR, HP, POST_NO, ADDR2, PASSWORD)
+          VALUES(
+              (SELECT NVL(MAX(TO_NUMBER(EMP_NO)),0)+1 FROM EMP)
+              ,#{nm},#{addr},#{hp},#{postNo},#{addr2}
+              ,PKG_CRYPTO.ENCRYPT(#{password})
+          )
 	</insert>
-	
-	<update id="updateProduct" parameterType="hashMap">
-		UPDATE PRODUCT
-		   SET PNAME = #{pname}, UNITPRICE = #{unitPrice}, DESCRIPTION = #{description},
-		       CATEGORY = #{category}, MANUFACTURER = #{manufacturer}, UNITSINSTOCK = #{unitsInStock},
-		       CONDITION = #{condition}, FILENAME = #{filename}
-		 WHERE PRODUCTID = #{productId}
-	</update>
 
-	<update id="updateProductNoFile" parameterType="hashMap">
-		UPDATE PRODUCT
-		   SET PNAME = #{pname}, UNITPRICE = #{unitPrice}, DESCRIPTION = #{description},
-		       CATEGORY = #{category}, MANUFACTURER = #{manufacturer}, UNITSINSTOCK = #{unitsInStock},
-		       CONDITION = #{condition}
-		 WHERE PRODUCTID = #{productId}
+	<!-- 직원번호 자동생성 -->
+	<select id="createEmpNo" resultType="String">
+		(SELECT NVL(MAX(TO_NUMBER(EMP_NO)),0)+1 FROM EMP)
+	</select>
+	
+	<update id="update" parameterType="String">
+		UPDATE EMP
+		   SET FIRE_YN = 'Y'
+		 WHERE EMP_NO = #{empNo}
 	</update>
 	
-	<delete id="deleteProduct" parameterType="string">
-		DELETE FROM PRODUCT WHERE PRODUCTID = #{productId}
-	</delete>
 </mapper>

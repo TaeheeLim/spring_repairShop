@@ -18,5 +18,25 @@ public class EmpServiceImpl implements EmpService{
 	public List<EmpVO> list() throws Exception {
 		return this.empMapper.list();
 	}
+	
+	@Override
+	public int insert(EmpVO vo) throws Exception {
+		return this.empMapper.insert(vo);
+	}
+	
+	@Override
+	public String createEmpNo() throws Exception{
+		return this.empMapper.createEmpNo();
+	}
+	
+	@Override
+	public EmpVO detail(String empNo) throws Exception{
+		return this.empMapper.detail(empNo);
+	}
+	
+	@Override
+	public int update(String empNo) {
+		return this.empMapper.update(empNo);
+	}
 
 }

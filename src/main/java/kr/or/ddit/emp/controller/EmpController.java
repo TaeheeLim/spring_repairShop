@@ -17,9 +17,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.or.ddit.emp.service.EmpService;
 import kr.or.ddit.emp.vo.EmpVO;
@@ -44,9 +46,17 @@ public class EmpController {
 	}
 	
 	@RequestMapping("/register")
-	public String register(Model model) {
+	public String register(Model model) throws Exception {
 		logger.info("register");
-		model.addAttribute("emp", new EmpVO());
+		
+		EmpVO empVO = new EmpVO();
+		
+		//직원번호 자동생성
+		String empNo = this.empSerivce.createEmpNo();
+		
+		empVO.setEmpNo(empNo);
+		
+		model.addAttribute("emp", empVO);
 		
 		return "emp/register";
 	}
@@ -54,9 +64,9 @@ public class EmpController {
 	//요청 파라미터 목록을 VO에 할당 시 ModelAttribute 어노테이션이 필요함
 	@PostMapping("/registerPost")
 	public String registerPost(@ModelAttribute("emp") @Validated EmpVO emp,
-				BindingResult result) {
+				BindingResult result) throws Exception {
 		logger.info("result : " + result.hasErrors());
-		
+		//validate 후 문제가 발생하면 실행
 		if(result.hasErrors()) {
 			List<ObjectError> allErrors = result.getAllErrors();
 			List<ObjectError> globalErrors = result.getGlobalErrors();
@@ -83,20 +93,74 @@ public class EmpController {
 		}
 		
 		//직원 등록 처리
+		int insertResult = this.empSerivce.insert(emp);
 		
+		//직원 목록으로 이동
+		return "redirect:/emp/list";
+	}
+
+	//직원 상세보기 화면
+	@GetMapping("/detail")
+	public String detail(@RequestParam("empNo") String empNo, Model model) throws Exception {
+		logger.info("detail에 도착했습니다.");
+		
+		EmpVO empVO = this.empSerivce.detail(empNo);
+		
+		logger.info("empVO : " + empVO);
+		model.addAttribute("emp", empVO);
+		
+		//forwarding
+		return "emp/detail";
+	}
+	
+
+	//요청 파라미터 목록을 VO에 할당 시 ModelAttribute 어노테이션이 필요함
+	@PostMapping("/detailPost")
+	public String detailPost(@ModelAttribute("emp") @Validated EmpVO emp,
+				BindingResult result, Model model) throws Exception {
+		logger.info("result : " + result.hasErrors());
+		//validate 후 문제가 발생하면 실행
+		if(result.hasErrors()) {
+			List<ObjectError> allErrors = result.getAllErrors();
+			List<ObjectError> globalErrors = result.getGlobalErrors();
+			List<FieldError> fieldErrors = result.getFieldErrors();
+			
+			logger.info("allErrors.size() : " + allErrors.size());
+			logger.info("globalErrors.size() : " + globalErrors.size());
+			logger.info("fieldErrors.size() : " + fieldErrors.size());
+			
+			for(int i = 0; i < allErrors.size(); i++) {
+				ObjectError objectError = allErrors.get(i);
+				logger.info("objectError : " + objectError);
+			}
+			for(int i = 0; i < globalErrors.size(); i++) {
+				ObjectError objectError = globalErrors.get(i);
+				logger.info("objectError : " + objectError);
+			}
+			for(int i = 0; i < fieldErrors.size(); i++) {
+				FieldError fieldError = fieldErrors.get(i);
+				logger.info("objectError : " + fieldError.getDefaultMessage());
+			}
+			
+			model.addAttribute("emp",emp);
+			
+			return "emp/detail";
+		}
+		
+		//직원 등록 및 직원 존재 시 정보 업데이트 처리
+		int insertResult = this.empSerivce.insert(emp);
 		
 		//직원 목록으로 이동
 		return "redirect:/emp/list";
 	}
 	
-	@RequestMapping("/update")
-	public String update() {
-		return "emp/update";
-	}
-	
-	@RequestMapping("/delete")
-	public String delete() {
-		return "emp/delete";
+	//직원 퇴직 처리
+	@PostMapping("/deletePost")
+	public String deletePost(@RequestParam("empNo") String empNo) {
+		
+		int update = this.empSerivce.update(empNo);
+		
+		return "redirect:/emp/detail?empNo="+empNo;
 	}
 	/*
 	스프링 폼 태그 라이브러리

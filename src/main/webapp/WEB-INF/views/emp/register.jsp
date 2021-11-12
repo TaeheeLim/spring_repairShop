@@ -24,8 +24,19 @@
     	$(function(){
     		//가입 버튼 클릭시
     		$('#idSubmit').on('click',function(e){
-    			//폼을 submit함
-    			$('.user').submit();
+    			// 비밀번호 확인 처리
+    			if($('#password').val()==$('#password2').val()){
+	    			//폼을 submit함
+	    			$('.user').submit();
+    			} else {
+    				//모달창의 내용을 변경
+    				$(".modal-body").html("비밀번호가 다릅니다.");
+    				//모달창을 보여주는 구문
+    				$('#myModal').modal("show");
+    				
+    				$('#idFont').css("display","block");				
+    			}
+    			
     		});
     	});
     </script>
@@ -45,12 +56,18 @@
                             <div class="text-center">
                                 <h1 class="h4 text-gray-900 mb-4">직원 등록</h1>
                             </div>
+<!-- 
+<폼 태그>
+1. path : 폼 항목에 바인딩되는 폼 객체의 프로퍼티를 지정
+2. readonly : 폼 항목을 읽기 전용으로 만들지 여부(기본값:false) => 값이 전달됨
+3. disabled : 폼 항목을 비 활성화할지 여부(기본값:false) => 값이 전달 안됨
+ -->
                             <form:form class="user" method="post" 
                             	modelAttribute="emp" action="/emp/registerPost">
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <form:input type="text" path="empNo" class="form-control form-control-user" 
-                                        placeholder="직원번호" />
+                                        placeholder="직원번호" readonly="true" />
                                         <font color="red" size="1">
                                         	<form:errors path="empNo"></form:errors>
                                         </font>
@@ -97,11 +114,14 @@
                                              placeholder="비밀번호" />
                                          <font color="red" size="1">
                                         	<form:errors path="password"></form:errors>
-                                    </font>
+                                    	 </font>
                                     </div>
                                     <div class="col-sm-6">
-										<input type="password" class="form-control form-control-user"
+										<input type="password" id="password2" class="form-control form-control-user"
 										placeholder="비밀번호 확인" />
+										 <font color="red" size="1" id="idFont" style="display:none;">
+                                        	비밀번호가 일치하지 않습니다.
+                                    	 </font>
 									</div>
                                 </div>
                                 <a href="#" id="idSubmit" class="btn btn-primary btn-user btn-block">
@@ -122,7 +142,25 @@
         </div>
 
     </div>
-
+<!-- Modeal 추가 시작 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">ddit</h4>
+			</div>
+			<div class="modal-body">처리가 완료되었습니다.</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default"
+				data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modeal 추가 끝 -->
     <!-- Bootstrap core JavaScript-->
     <script src="/resources/vendor/jquery/jquery.min.js"></script>
     <script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

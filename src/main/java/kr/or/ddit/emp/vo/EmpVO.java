@@ -18,6 +18,7 @@ public class EmpVO implements Serializable {
 
 	private String addr2;
 	private String password;
+	private String fireYn;	//퇴직여부
 	
 	public String getEmpNo() {
 		return empNo;
@@ -62,14 +63,15 @@ public class EmpVO implements Serializable {
 		this.password = password;
 	}
 	
+	public String getFireYn() {
+		return fireYn;
+	}
+	public void setFireYn(String fireYn) {
+		this.fireYn = fireYn;
+	}
 	@Override
 	public String toString() {
 		return "EmpVO [empNo=" + empNo + ", nm=" + nm + ", addr=" + addr + ", hp=" + hp + ", postNo=" + postNo
-				+ ", addr2=" + addr2 + ", password=" + password + "]";
+				+ ", addr2=" + addr2 + ", password=" + password + ", fireYn=" + fireYn + "]";
 	}
-	
-	
-	
-	
-	
 }
