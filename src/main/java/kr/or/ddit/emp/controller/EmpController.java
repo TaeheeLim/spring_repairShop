@@ -36,6 +36,16 @@ public class EmpController {
 	@Autowired
 	private EmpService empSerivce;
 	
+	@GetMapping("/logout")
+	public String logout(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		//로그아웃
+		session.invalidate();
+		
+		//redirect
+		return "redirect:/emp/loginForm";
+	}
+	
 	@RequestMapping("/list")
 	public String list(Model model) throws Exception {
 		List<EmpVO> list = this.empSerivce.list();
@@ -161,6 +171,66 @@ public class EmpController {
 		int update = this.empSerivce.update(empNo);
 		
 		return "redirect:/emp/detail?empNo="+empNo;
+	}
+	
+	//직원로그인폼
+	@GetMapping("/loginForm")
+	public String loginForm(Model model){
+		
+		model.addAttribute("emp", new EmpVO());
+		
+		//forwarding
+		return "emp/loginForm";
+	}
+	
+	//로그인 처리
+	@PostMapping("/login")
+	public String login(@ModelAttribute("emp") @Validated EmpVO empVO, 
+			BindingResult result, HttpServletRequest request, Model model) throws Exception {
+		logger.info("이엠피비오는 : " + empVO.toString());
+		logger.info("에러 확인 : " + result.getAllErrors());
+		
+		if(result.hasErrors()) {	//validated 결과 문제가 발생
+			return "emp/loginForm";
+		} else {	//문제가 없으면..
+			HttpSession session = request.getSession();
+			
+			//아이디에 해당되는 직원이 있는가?
+			String empNo = empVO.getEmpNo();	//1
+			String password = empVO.getPassword();	//java
+			//db정보
+			EmpVO dbEmpVO = this.empSerivce.detail(empNo);
+			
+			if(dbEmpVO != null) {	//아이디에 해당되는 직원이 있다면
+				logger.info("디비 결과 : " + dbEmpVO.toString());
+				//그리고 입력한 비밀번호와 해당 아이디의 db쪽 비밀번호가 일치하면 로그인
+				if(password.equals(dbEmpVO.getPassword())) {
+					//LoginCheckFilter.java에서 session.getAttribute("EMPVO")
+					session.setAttribute("EMPVO", empVO);
+					logger.info("emp 로그인 성공");
+					//forwarding
+					return "emp/index";
+				} else {	//로그인 실패
+					empVO = new EmpVO();
+					model.addAttribute("loginFail", "해당 아이디가 없습니다.");
+					return "emp/loginForm";
+				}
+			} else {	//아이디에 해당하는 직원이 없다면..
+				empVO = new EmpVO();
+				model.addAttribute("loginFail","비밀번호가 잘못 되었습니다.");
+				return "emp/loginForm";
+			}
+			
+			
+			
+		}
+	}
+	
+	//메인화면
+	@GetMapping("/index")
+	public String index() {
+		//forwarding
+		return "emp/index";
 	}
 	/*
 	스프링 폼 태그 라이브러리
