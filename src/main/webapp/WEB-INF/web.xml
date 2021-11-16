@@ -66,4 +66,15 @@
    		<filter-name>LoginCheck</filter-name>
    		<url-pattern>/article/*</url-pattern>
    </filter-mapping>
+   
+   <!-- 요청한 URL을 처리하기 위한 자원이 존재하지 않음(page not found) -->
+   <error-page>
+   		<error-code>404</error-code>
+   		<location>/error/error404</location>
+   </error-page>
+	<!-- 서버 내부 오류가 발생함(jsp에서 exception..) -->
+   <error-page>
+   		<error-code>500</error-code>
+   		<location>/error/error500</location>
+   </error-page>
 </web-app>
