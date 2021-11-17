@@ -18,6 +18,8 @@
 		<typeAlias type="kr.or.ddit.car.vo.CarVO" alias="carVO"/>
 		<typeAlias type="kr.or.ddit.repSer.vo.RepSerVO" alias="repSerVO"/>
 		<typeAlias type="kr.or.ddit.article.vo.ArticleVO" alias="articleVO"/>
+		<typeAlias type="kr.or.ddit.article.vo.WriterVO" alias="writerVO"/>
+		<typeAlias type="kr.or.ddit.article.vo.ArticleContentVO" alias="articleContentVO"/>
 	</typeAliases>
 	
 </configuration>
