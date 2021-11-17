@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+* id와 result
+- 공통점 : 검색 결과의 한개의 컬럼을 한개의 프로퍼티에 매핑
+- 차이 :
+	1) id : 객체 인스턴스 비교 시 사용되는 구분자 프로퍼티(기본키)
+	2) result : 기본키 이외
+ -->
+<mapper namespace="kr.or.ddit.article.mapper.ArticleMapper">
+	<resultMap type="articleVO" id="articleMap">
+		<id property="rnum" column="RNUM" />	
+		<id property="articleNo" column="ARTICLE_NO" />
+		<id property="title" column="TITLE" />
+		<id property="regdate" column="REGDATE" />
+		<id property="moddate" column="MODDATE" />
+		<id property="readCnt" column="READ_CNT" />
+			<association property="writerVO" javaType="writerVO">
+				<result property="writerId" column="WRITER_ID" />
+				<result property="writerName" column="WRITER_NAME" />
+			</association>
+			<association property="articleContentVO" javaType="articleContentVO">
+				<result property="articleNo" column="ARTICLE_NO" />
+				<result property="content" column="CONTENT" 
+				jdbcType="CLOB" javaType="java.lang.String" />
+			</association>
+	</resultMap>
+	
+	<!-- article 테이블로 insert -->
+	<insert id="insertArticle" parameterType="articleVO">
+		<selectKey keyProperty="articleNo" order="BEFORE" resultType="int">
+			SELECT NVL(MAX(ARTICLE_NO),0) + 1 FROM ARTICLE
+		</selectKey>
+		INSERT INTO ARTICLE(ARTICLE_NO, WRITER_ID, WRITER_NAME, TITLE, REGDATE, MODDATE, READ_CNT)
+		VALUES(
+			#{articleNo}, #{writerVO.writerId}, #{writerVO.writerName}, #{title}, SYSDATE, NULL, 0)
+	</insert>
+	
+	<!-- article_content 테이블로 insert -->
+	<insert id="insertArticleContent" parameterType="articleVO">
+		INSERT INTO ARTICLE_CONTENT(ARTICLE_NO,CONTENT)
+		VALUES(#{articleNo},#{articleContentVO.content})
+	</insert>
+	
+	<!-- 게시글 목록 select -->
+	<select id="selectArticle" parameterType="hashMap" resultMap="articleMap">
+		   SELECT T.*
+		      FROM 
+		      (
+		          SELECT ROW_NUMBER() OVER ( ORDER BY A.ARTICLE_NO DESC) AS RNUM
+		                ,A.ARTICLE_NO, A.WRITER_ID, A.WRITER_NAME, A.TITLE, 
+		                 TO_CHAR(A.REGDATE,'YYYY-MM-DD') AS REGDATE, 
+		                 TO_CHAR(A.MODDATE,'YYYY-MM-DD') AS MODDATE, B.CONTENT, A.READ_CNT
+		            FROM ARTICLE A, ARTICLE_CONTENT B 
+		           WHERE A.ARTICLE_NO = B.ARTICLE_NO
+		      ) T
+		      WHERE T.RNUM BETWEEN #{currentPage}*10-9 AND #{currentPage}*10
+	</select>
+	
+	<!-- 전체 게시글 행의 수 -->
+	<select id="totalArticle" resultType="int">
+		 SELECT COUNT(*) CNT FROM VW_ARTICLE_CONTENT
+	</select>
+</mapper>
