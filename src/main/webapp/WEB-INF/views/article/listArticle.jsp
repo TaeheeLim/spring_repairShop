@@ -3,9 +3,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
+<script src="/resources/js/jquery-latest.min.js"></script>
+<script src="/resources/js/jspdf.min.js"></script>
+<script src="/resources/js/html2canvas.min.js"></script>
+<script src="/resources/js/html2pdf.bundle.min.js"></script>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -27,15 +29,10 @@
 </head>
 
 <body id="page-top">
-
    <!-- Page Wrapper -->
    <div id="wrapper">
-
-
-
       <!-- Content Wrapper -->
       <div id="content-wrapper" class="d-flex flex-column">
-
          <!-- Main Content -->
          <div id="content">
 
@@ -44,7 +41,7 @@
             <!-- End of Topbar -->
 
             <!-- Begin Page Content -->
-            <div class="container-fluid">
+            <div class="container-fluid" id="div0">
 
                <!-- Page Heading -->
                <h1 class="h3 mb-2 text-gray-800">Tables</h1>
@@ -60,6 +57,14 @@
                      <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
                   </div>
                   <div class="card-body">
+                  	<div style="float:right; margin-bottom: 10px;">
+                  		<a href="javascript:makeCkPdf();" class="btn btn-info btn-icon-split">
+	                        <span class="icon text-white-50">
+	                            <i class="fas fa-info-circle"></i>
+	                        </span>
+	                        <span class="text">PDF다운로드</span>
+                        </a>
+                  	</div>
                      <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                            <thead>
@@ -68,15 +73,21 @@
                                  <th>제목</th>
                                  <th>작성자</th>
                                  <th>조회수</th>
+                                 <th>게시글번호</th>
                               </tr>
                            </thead>
                            <tbody>
                               <c:forEach var="article" items="${articlePage.content}" varStatus="stat">
                                  <tr>
                                     <td>${article.rnum}</td>
-                                    <td>${article.title}</td>
+                                    <td>
+                                    	<a href="/article/seeArticle?id=${article.articleNo}">
+                                    		${article.title}
+                                    	</a>
+                                    </td>
                                     <td>${article.writerVO.writerName}</td>
                                     <td>${article.readCnt}</td>
+                                    <td>${article.articleNo}</td>
                                  </tr>
                               </c:forEach>
                            </tbody>
@@ -102,23 +113,14 @@
                            </div>
                         </div>
                      </div>
-
-
-
                   </div>
                </div>
-
-
             </div>
             <!-- /.container-fluid -->
-
          </div>
          <!-- End of Main Content -->
-
-
       </div>
       <!-- End of Content Wrapper -->
-
    </div>
    <!-- End of Page Wrapper -->
 
@@ -163,6 +165,27 @@
    <!-- Page level custom scripts -->
    <script src="/resources/js/demo/datatables-demo.js"></script>
 
-</body>
 
+<div id="div1">${articlePage.content}</div>
+<script type="text/javascript">
+$(function(){
+	var articleVO = $('#div1').text();
+	const json = JSON.stringify(articleVO);
+	console.log('json : ' + json);
+});
+	
+function makeCkPdf(){
+	sessionStorage.setItem("key1", new Date());
+	
+	document.getElementById('div1').innerHTML = sessionStorage.getItem("key1");
+	
+	html2canvas($("#div0")[0]).then(function(canvas){
+		var doc = new jsPDF('1','px',[700,1000]);	//jsPDF객체 생성
+		var imgData = canvas.toDataURL('image/png');	//캔버스를 이미지로 변환
+		doc.addImage(imgData,'PNG',0,0);	//이미지 기반으로 pdf 생성
+		doc.save('sample.pdf');
+	});
+}
+</script>
+</body>
 </html>

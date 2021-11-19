@@ -206,7 +206,7 @@ public class EmpController {
 			
 			if (dbEmpVO != null) { // 아이디에 해당되는 직원이 있다면
 				logger.info("디비 결과 : " + dbEmpVO.toString());
-				// 그리고 입력한 비밀번호와 해당 아이디의 db쪽 비밀번호가 일치하면 로그인
+				// 그리고 입력한 비밀번호와 해당 dp아이디의 db쪽 비밀번호가 일치하면 로그인
 				if (password.equals(dbEmpVO.getPassword())) {
 					// LoginCheckFilter.java에서 session.getAttribute("EMPVO")
 					session.setAttribute("EMPVO", dbEmpVO);

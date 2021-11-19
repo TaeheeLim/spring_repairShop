@@ -28,4 +28,12 @@ public class UtilController {
 	public String chart01Multi() {
 		return "chart/chart01Multi";
 	}
+	
+	//구글차트(오라클DBMS)
+	@GetMapping("/chart/chart02")
+	public String cahrt02() {
+		return "chart/chart02";
+	}
+	
+	
 }

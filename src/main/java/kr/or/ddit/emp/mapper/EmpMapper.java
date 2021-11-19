@@ -8,13 +8,13 @@ public interface EmpMapper {
 	//직원 목록
 	public List<EmpVO> list();
 	//직원등록
-	int insert(EmpVO vo);
+	public int insert(EmpVO vo);
 	//직원번호 자동생성
-	String createEmpNo();
+	public String createEmpNo();
 	//직원정보 상세
-	EmpVO detail(String empNo);
+	public EmpVO detail(String empNo);
 	//직원 퇴직 처리
-	int update(String empNo);
+	public int update(String empNo);
 	
 	
 	

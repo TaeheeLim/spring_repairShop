@@ -1,6 +1,7 @@
 package kr.or.ddit.emp.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,5 +39,6 @@ public class EmpServiceImpl implements EmpService{
 	public int update(String empNo) {
 		return this.empMapper.update(empNo);
 	}
+	
 
 }

@@ -12,10 +12,10 @@ public interface EmpService {
 	public int insert(EmpVO vo) throws Exception;
 
 	//직원번호 자동생성
-	String createEmpNo() throws Exception;
+	public String createEmpNo() throws Exception;
 	
 	//직원 정보 상세
-	EmpVO detail(String empNo) throws Exception;
+	public EmpVO detail(String empNo) throws Exception;
 
-	int update(String empNo);
+	public int update(String empNo);
 }

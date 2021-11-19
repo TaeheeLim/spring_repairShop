@@ -20,6 +20,7 @@
 		<typeAlias type="kr.or.ddit.article.vo.ArticleVO" alias="articleVO"/>
 		<typeAlias type="kr.or.ddit.article.vo.WriterVO" alias="writerVO"/>
 		<typeAlias type="kr.or.ddit.article.vo.ArticleContentVO" alias="articleContentVO"/>
+		<typeAlias type="kr.or.ddit.article.vo.FilesVO" alias="filesVO"/>
 	</typeAliases>
 	
 </configuration>

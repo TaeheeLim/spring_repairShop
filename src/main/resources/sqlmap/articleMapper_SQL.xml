@@ -26,7 +26,66 @@
 				<result property="content" column="CONTENT" 
 				jdbcType="CLOB" javaType="java.lang.String" />
 			</association>
+<!-- 			<association property="filesVO" javaType="filesVO"> -->
+<!-- 				<result property="idx" column="IDX" /> -->
+<!-- 				<result property="fileName" column="FILE_NAME" /> -->
+<!-- 				<result property="articleNo" column="ARTICLE_NO" /> -->
+<!-- 			</association> -->
 	</resultMap>
+	<!-- 파일이 있는 게시글 조회 -->
+	<select id="specificArticle" parameterType="int" resultType="kr.or.ddit.article.vo.RealArticleVO">
+		SELECT *
+		  FROM ARTICLE A, ARTICLE_CONTENT B, FILES C
+		 WHERE A.ARTICLE_NO = #{articleNo}
+		  AND A.ARTICLE_NO = B.ARTICLE_NO
+		  AND B.ARTICLE_NO = C.ARTICLE_NO
+	</select>
+	<!-- 파일이 있는 게시글인지 확인 -->
+	<select id="checkIsFile" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		  FROM ARTICLE A, ARTICLE_CONTENT B, FILES C
+		 WHERE A.ARTICLE_NO = #{articleNo}
+		   AND A.ARTICLE_NO = B.ARTICLE_NO
+		   AND B.ARTICLE_NO = C.ARTICLE_NO
+	</select>
+	<!-- 파일이 없는 게시글 조회 -->
+	<select id="selectArticle2" parameterType="int" resultType="kr.or.ddit.article.vo.RealArticleVO">
+		 SELECT *
+  		   FROM ARTICLE A, ARTICLE_CONTENT B
+ 		  WHERE A.ARTICLE_NO = #{articleNo}
+  		    AND A.ARTICLE_NO = B.ARTICLE_NO
+	</select>
+	
+	<!-- 제목 업데이트 -->
+	<update id="updateArticle" parameterType="articleVO">
+		UPDATE ARTICLE
+		  SET  TITLE = #{title}
+		WHERE ARTICLE_NO = #{articleNo}
+	</update>
+	
+	<!-- 내용 업데이트 -->
+	<update id="updateArticleContent" parameterType="articleVO">
+		UPDATE ARTICLE_CONTENT
+		  SET  CONTENT = #{articleContentVO.content}
+		WHERE ARTICLE_NO = #{articleNo}
+	</update>
+	
+	<!-- 파일 업데이트 이전에 해당 파일들 삭제 -->
+	<delete id="deleteFiles" parameterType="int">
+		DELETE
+		  FROM FILES
+		 WHERE ARTICLE_NO = #{articleNo} 
+	</delete>
+	
+	<!-- 업데이트 시 새로운 파일 넣는거 -->
+	<insert id="insertNewFiles" parameterType="java.util.List">
+		INSERT ALL
+		<foreach collection="list" item="item" separator=" " index="index">
+			INTO FILES(IDX, FILE_NAME, ARTICLE_NO)
+			VALUES((SELECT NVL(MAX(IDX), 0) + (#{index}+1) FROM FILES), #{item.fileName}, #{item.articleNo})
+		</foreach>
+		SELECT * FROM DUAL
+	</insert>	
 	
 	<!-- article 테이블로 insert -->
 	<insert id="insertArticle" parameterType="articleVO">
@@ -41,7 +100,22 @@
 	<!-- article_content 테이블로 insert -->
 	<insert id="insertArticleContent" parameterType="articleVO">
 		INSERT INTO ARTICLE_CONTENT(ARTICLE_NO,CONTENT)
+		
 		VALUES(#{articleNo},#{articleContentVO.content})
+	</insert>
+	
+	<insert id="insertFiles" parameterType="java.util.List">
+		<selectKey keyProperty="articleNo" order="BEFORE" resultType="int">
+			SELECT MAX(ARTICLE_NO) FROM ARTICLE
+		</selectKey>
+	
+		insert all
+		<foreach collection="list" item="item" separator=" " index="index">
+			into files (idx, file_name, article_no)
+			values((SELECT NVL(MAX(IDX), 0) + (#{index}+1) FROM FILES), #{item.fileName}, #{articleNo})
+		</foreach>
+		select * from dual
+		
 	</insert>
 	
 	<!-- 게시글 목록 select -->
@@ -63,4 +137,10 @@
 	<select id="totalArticle" resultType="int">
 		 SELECT COUNT(*) CNT FROM VW_ARTICLE_CONTENT
 	</select>
+	
+	<update id="count" parameterType="int">
+		UPDATE ARTICLE
+		  SET READ_CNT = READ_CNT + 1
+		WHERE ARTICLE_NO = #{articleNo}
+	</update>
 </mapper>

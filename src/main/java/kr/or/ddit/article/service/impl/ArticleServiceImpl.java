@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import kr.or.ddit.article.mapper.ArticleMapper;
 import kr.or.ddit.article.service.ArticleService;
 import kr.or.ddit.article.vo.ArticleVO;
+import kr.or.ddit.article.vo.FilesVO;
+import kr.or.ddit.article.vo.RealArticleVO;
 
 @Service
 public class ArticleServiceImpl implements ArticleService{
@@ -24,7 +26,7 @@ public class ArticleServiceImpl implements ArticleService{
 		
 		//글내용 테이블로 insert
 		//articleNo <= max(ARTICLE_NO)
-		result = this.articleMapper.insertArticleContent(articleVO);
+		this.articleMapper.insertArticleContent(articleVO);
 		
 		return result;
 	}
@@ -39,4 +41,48 @@ public class ArticleServiceImpl implements ArticleService{
 	public int totalArticle() throws Exception {
 		return this.articleMapper.totalArticle();
 	};
+	
+	@Override
+	public int insertFiles(List<FilesVO> list) {
+		return this.articleMapper.insertFiles(list);
+	}
+	
+	@Override
+	public int insertNewFiles(List<FilesVO> list) {
+		return this.articleMapper.insertNewFiles(list);
+	};
+	
+	@Override
+	public List<RealArticleVO> specificArticle(int articleNo){
+		return this.articleMapper.specificArticle(articleNo);
+	}
+
+	@Override
+	public int count(int articleNo) {
+		return this.articleMapper.count(articleNo);
+	}
+
+	@Override
+	public int checkIsFile(int articleNo) {
+		return this.articleMapper.checkIsFile(articleNo);
+	}
+
+	@Override
+	public RealArticleVO selectArticle2(int articleNo) {
+		return this.articleMapper.selectArticle2(articleNo);
+	}
+
+	@Override
+	public int updateArticle(ArticleVO articleVO) {
+		int result = this.articleMapper.updateArticle(articleVO);
+		this.articleMapper.updateArticleContent(articleVO);
+		return result;
+	}
+
+	@Override
+	public int deleteFiles(int articleNo) {
+		return this.articleMapper.deleteFiles(articleNo);
+	}
+
+
 }

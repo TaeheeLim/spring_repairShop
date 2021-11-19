@@ -1,5 +1,8 @@
 package kr.or.ddit.article.vo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 public class ArticleVO {
@@ -12,21 +15,11 @@ public class ArticleVO {
 	private String moddate;
 	private ArticleContentVO articleContentVO;
 	private int readCnt;
+	private FilesVO filesVO;
 	
 	//constructor
 	public ArticleVO() {
 		
-	}
-	
-	public ArticleVO(int articleNo, WriterVO writerVO, String title, String regdate, 
-							String moddate, ArticleContentVO articleContentVO, int readCnt) {
-		this.articleNo = articleNo;
-		this.writerVO = writerVO;
-		this.title = title;
-		this.regdate = regdate;
-		this.moddate = moddate;
-		this.readCnt = readCnt;
-		this.articleContentVO = articleContentVO;
 	}
 
 	public int getRnum() {
@@ -35,14 +28,6 @@ public class ArticleVO {
 
 	public void setRnum(int rnum) {
 		this.rnum = rnum;
-	}
-
-	public ArticleContentVO getArticleContentVO() {
-		return articleContentVO;
-	}
-
-	public void setArticleContentVO(ArticleContentVO articleContentVO) {
-		this.articleContentVO = articleContentVO;
 	}
 
 	public int getArticleNo() {
@@ -85,6 +70,14 @@ public class ArticleVO {
 		this.moddate = moddate;
 	}
 
+	public ArticleContentVO getArticleContentVO() {
+		return articleContentVO;
+	}
+
+	public void setArticleContentVO(ArticleContentVO articleContentVO) {
+		this.articleContentVO = articleContentVO;
+	}
+
 	public int getReadCnt() {
 		return readCnt;
 	}
@@ -92,11 +85,34 @@ public class ArticleVO {
 	public void setReadCnt(int readCnt) {
 		this.readCnt = readCnt;
 	}
+	
+	public FilesVO getFilesVO() {
+		return filesVO;
+	}
+
+	public void setFilesVO(FilesVO filesVO) {
+		this.filesVO = filesVO;
+	}
+	
+	public ArticleVO(int rnum, int articleNo, WriterVO writerVO, String title, String regdate, String moddate,
+			ArticleContentVO articleContentVO, int readCnt, FilesVO filesVO) {
+		this.rnum = rnum;
+		this.articleNo = articleNo;
+		this.writerVO = writerVO;
+		this.title = title;
+		this.regdate = regdate;
+		this.moddate = moddate;
+		this.articleContentVO = articleContentVO;
+		this.readCnt = readCnt;
+		this.filesVO = filesVO;
+	}
 
 	@Override
 	public String toString() {
 		return "ArticleVO [rnum=" + rnum + ", articleNo=" + articleNo + ", writerVO=" + writerVO + ", title=" + title
 				+ ", regdate=" + regdate + ", moddate=" + moddate + ", articleContentVO=" + articleContentVO
-				+ ", readCnt=" + readCnt + "]";
+				+ ", readCnt=" + readCnt + ", filesVO=" + filesVO + "]";
 	}
+	
+
 }
