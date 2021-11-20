@@ -32,4 +32,8 @@ public interface ArticleService {
 	public int insertNewFiles(List<FilesVO> list);
 	
 	public int deleteFiles(int articleNo);
+	
+	public int deleteArticle(int articleNo);
+	
+	public List<RealArticleVO> searchArticle(Map<String, Object> map);
 }

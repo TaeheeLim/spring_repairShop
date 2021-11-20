@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.or.ddit.article.service.ArticleService;
@@ -248,6 +250,7 @@ public class ArticleController {
 		
 	@GetMapping("/update")
 	public String update(Model model, @RequestParam(value="no") String no) {
+		
 		logger.info("/update로 넘어온 고유번호" + no);
 		logger.info("컨트롤러에서 update로 이동");
 		
@@ -320,7 +323,7 @@ public class ArticleController {
              logger.info("Edge browser");
              
              downloadName = URLEncoder.encode(resourceName, "UTF-8");
-          }else{
+          } else {
              logger.info("chrome browser");
              
              downloadName = new String(resourceName.getBytes("UTF-8"), "ISO-8859-1");
@@ -337,4 +340,37 @@ public class ArticleController {
        // HttpStatus.OK : 200(성공)
        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
     }
+	
+	@GetMapping("/delete")
+	public String deleteArticle(@RequestParam(value="no") String articleNo) {
+		try {
+			int deleteArticle = articleService.deleteArticle(Integer.parseInt(articleNo));
+			if(deleteArticle != 0) {
+				logger.info("삭제성공!!!!!!!!!!!!!!!");
+				return "redirect:/article/listArticle";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return "redirect:/article/listArticle";
+	}
+	
+	@ResponseBody
+	@PostMapping("/search")
+	public List<RealArticleVO> searchArticle(@RequestParam Map<String, Object> map) {
+		logger.info(map.toString());
+		return articleService.searchArticle(map);
+	}
 }
+
+
+
+
+
+
+
+
+
+
+

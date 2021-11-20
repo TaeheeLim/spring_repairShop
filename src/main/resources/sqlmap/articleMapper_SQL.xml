@@ -137,10 +137,30 @@
 	<select id="totalArticle" resultType="int">
 		 SELECT COUNT(*) CNT FROM VW_ARTICLE_CONTENT
 	</select>
-	
+	<!-- 조회수 증가 -->
 	<update id="count" parameterType="int">
 		UPDATE ARTICLE
 		  SET READ_CNT = READ_CNT + 1
 		WHERE ARTICLE_NO = #{articleNo}
 	</update>
+	
+	<delete id="deleteArticle" parameterType="int">
+		DELETE
+		  FROM ARTICLE
+		 WHERE ARTICLE_NO = #{articleNo} 	  
+	</delete>
+	
+	<select id="searchArticle" parameterType="hashMap" resultType="kr.or.ddit.article.vo.RealArticleVO">
+		SELECT *
+		  FROM ARTICLE A, ARTICLE_CONTENT B
+		 WHERE A.ARTICLE_NO = B.ARTICLE_NO
+		   <choose>
+		   		<when test='ption=="t"'>
+				  AND A.TITLE LIKE '%'||#{keyword}||'%'
+		   		</when>
+		   		<when test='ption.equals("c")'>
+				  AND B.CONTENT LIKE '%'||#{keyword}||'%'
+		   		</when>
+		   </choose>
+	</select>
 </mapper>

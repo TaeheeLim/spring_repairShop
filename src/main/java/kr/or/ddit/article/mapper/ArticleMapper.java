@@ -41,5 +41,7 @@ public interface ArticleMapper {
 	
 	int deleteFiles(int articleNo);
 	
+	int deleteArticle(int articleNo);
 	
+	List<RealArticleVO> searchArticle(Map<String, Object> map);
 }

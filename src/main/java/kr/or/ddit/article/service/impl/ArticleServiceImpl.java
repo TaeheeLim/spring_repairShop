@@ -16,7 +16,6 @@ import kr.or.ddit.article.vo.RealArticleVO;
 public class ArticleServiceImpl implements ArticleService{
 	@Autowired
 	private ArticleMapper articleMapper;
-
 	
 	@Override
 	public int insertArticle(ArticleVO articleVO) throws Exception {
@@ -83,6 +82,14 @@ public class ArticleServiceImpl implements ArticleService{
 	public int deleteFiles(int articleNo) {
 		return this.articleMapper.deleteFiles(articleNo);
 	}
-
-
+	
+	@Override
+	public int deleteArticle(int articleNo) {
+		return this.articleMapper.deleteArticle(articleNo);
+	}
+	
+	@Override
+	public List<RealArticleVO> searchArticle(Map<String, Object> map) {
+		return this.articleMapper.searchArticle(map);
+	}
 }

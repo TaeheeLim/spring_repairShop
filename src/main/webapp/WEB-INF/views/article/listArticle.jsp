@@ -57,6 +57,14 @@
                      <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
                   </div>
                   <div class="card-body">
+            		
+            		<select id="select">
+            			<option value="a">선택</option>
+            			<option value="t">제목</option>
+            			<option value="c">내용</option>
+            		</select>
+            		<input type="text" id="searchInput" placeholder="검색내용을 입력해주세요"/>
+                  	
                   	<div style="float:right; margin-bottom: 10px;">
                   		<a href="javascript:makeCkPdf();" class="btn btn-info btn-icon-split">
 	                        <span class="icon text-white-50">
@@ -76,7 +84,7 @@
                                  <th>게시글번호</th>
                               </tr>
                            </thead>
-                           <tbody>
+                           <tbody id="tbody">
                               <c:forEach var="article" items="${articlePage.content}" varStatus="stat">
                                  <tr>
                                     <td>${article.rnum}</td>
@@ -166,26 +174,103 @@
    <script src="/resources/js/demo/datatables-demo.js"></script>
 
 
-<div id="div1">${articlePage.content}</div>
 <script type="text/javascript">
-$(function(){
-	var articleVO = $('#div1').text();
-	const json = JSON.stringify(articleVO);
-	console.log('json : ' + json);
+// $(function(){
+// 	const json = JSON.stringify("");
+// 	console.log('json : ' + json);
+// });
+	
+// function makeCkPdf(){
+// 	sessionStorage.setItem("key1", new Date());
+	
+// 	document.getElementById('div1').innerHTML = sessionStorage.getItem("key1");
+	
+// 	html2canvas($("#div0")[0]).then(function(canvas){
+// 		var doc = new jsPDF('1','px',[700,1000]);	//jsPDF객체 생성
+// 		var imgData = canvas.toDataURL('image/png');	//캔버스를 이미지로 변환
+// 		doc.addImage(imgData,'PNG',0,0);	//이미지 기반으로 pdf 생성
+// 		doc.save('sample.pdf');
+// 	});
+// }
+
+const searchInput = document.querySelector('#searchInput');
+const selectOption = document.querySelector('#select');
+
+searchInput.addEventListener('keyup', e => {
+	const _keyword = e.target.value
+	findArticle(_keyword);
 });
+
+selectOption.addEventListener('change', e => {
+	const _keyword = searchInput.value;
+	findArticle(_keyword);
+})
+
+function findArticle(key){
+	const _option = document.querySelector('#select').value;
+	const _data = {
+			keyword : key,
+			ption : _option
+	}
 	
-function makeCkPdf(){
-	sessionStorage.setItem("key1", new Date());
-	
-	document.getElementById('div1').innerHTML = sessionStorage.getItem("key1");
-	
-	html2canvas($("#div0")[0]).then(function(canvas){
-		var doc = new jsPDF('1','px',[700,1000]);	//jsPDF객체 생성
-		var imgData = canvas.toDataURL('image/png');	//캔버스를 이미지로 변환
-		doc.addImage(imgData,'PNG',0,0);	//이미지 기반으로 pdf 생성
-		doc.save('sample.pdf');
+	$.ajax({
+		url : '/article/search',
+		method : 'post',
+		data: _data,
+		success (res) {
+			const tBody = document.querySelector("#tbody")
+			tBody.innerHTML = ''
+			let row = ""
+			console.log(res)
+			for(let item of res) {
+				//console.log(item)
+				row += `<tr>
+                    <td>` + item.articleNo +`</td>
+                    <td>
+                    	<a href="/article/seeArticle?id=` + item.articleNo + `">
+                    		` + item.title + `
+                    	</a>
+                    </td>
+                    <td>` + item.writerName + `</td>
+                    <td>` + item.readCnt + `</td>
+                    <td>` + item.articleNo + `</td>
+                 </tr>`
+			}
+            tBody.innerHTML = row
+		},
+		error(e) {
+			console.log(e)
+		}
 	});
 }
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
